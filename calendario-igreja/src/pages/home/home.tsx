@@ -27,6 +27,12 @@ const eventosMockados = [
   { titulo: '🎉 Evento Especial', inicio: new Date(2025, 11, 5), fim: new Date(2025, 11, 5), type: 'evento', status: 'PENDENTE' },
   { titulo: '👥 Jalberto', inicio: new Date(2025, 11, 8, 0, 0), fim: new Date(2025, 11, 10, 23, 59), status: 'ACEITO' },
   { titulo: '👥 Carlos e Beatriz', inicio: new Date(2025, 11, 3, 19, 0), fim: new Date(2025, 11, 3, 20, 0), status: 'ACEITO' },
+  { titulo: '👥 Maria', inicio: new Date(2025, 10, 21), fim: new Date(2025, 10, 21), ministerio: 'Mídia', status: 'ACEITO' },
+  { titulo: '👥 Joao', inicio: new Date(2025, 10, 22), fim: new Date(2025, 10, 22), ministerio: 'Mídia', status: 'PENDENTE' },
+  { titulo: '👥 Cleber', inicio: new Date(2025, 10, 23), fim: new Date(2025, 10, 23), ministerio: 'Diaconato', status: 'RECUSADO' },
+  { titulo: '👥 Ana', inicio: new Date(2025, 10, 24), fim: new Date(2025, 10, 24), ministerio: 'Diaconato', status: 'ACEITO' },
+  { titulo: '👥 Xuxa', inicio: new Date(2025, 10, 25), fim: new Date(2025, 10, 25), ministerio: 'Diaconato', status: 'ACEITO' },
+  { titulo: '👥 Xuxa', inicio: new Date(2025, 10, 26), fim: new Date(2025, 10, 26), ministerio: 'Kids', status: 'ACEITO' },
 ]
 
 type Evento = {
