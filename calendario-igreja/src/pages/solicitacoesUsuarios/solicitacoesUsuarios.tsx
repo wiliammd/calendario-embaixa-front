@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import "./solicitacoesUsuarios.css";
 
+type Usuario = {
+  id: number
+  nome: string
+  email: string
+  ministerio: string
+  status: string
+  ativo: boolean
+}
+
 // 🔹 Mock simulando resposta do backend
 const usuariosMock = [
   { id: 1, nome: "Marcos Silva", email: "marcos@email.com", ministerio: "Mídia", status: "PENDENTE", ativo: true },
@@ -12,7 +21,7 @@ const usuariosMock = [
 ];
 
 export default function SolicitacoesUsuarios() {
-  const [usuarios, setUsuarios] = useState([]);
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [statusFiltro, setStatusFiltro] = useState("TODOS");
   const [busca, setBusca] = useState("");
   const [pagina, setPagina] = useState(1);
@@ -116,22 +125,20 @@ export default function SolicitacoesUsuarios() {
                 <td>{u.ministerio}</td>
                 <td>
                   <span
-                    className={`status-badge ${
-                      u.status === "ACEITO"
+                    className={`status-badge ${u.status === "ACEITO"
                         ? "status-aceito"
                         : u.status === "PENDENTE"
-                        ? "status-pendente"
-                        : "status-recusado"
-                    }`}
+                          ? "status-pendente"
+                          : "status-recusado"
+                      }`}
                   >
                     {u.status}
                   </span>
                 </td>
                 <td>
                   <span
-                    className={`ativo-badge ${
-                      u.ativo ? "ativo-true" : "ativo-false"
-                    }`}
+                    className={`ativo-badge ${u.ativo ? "ativo-true" : "ativo-false"
+                      }`}
                   >
                     {u.ativo ? "Ativo" : "Bloqueado"}
                   </span>

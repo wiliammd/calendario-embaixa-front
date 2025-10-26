@@ -1,7 +1,7 @@
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { format, parse, startOfWeek, getDay } from 'date-fns'
-import ptBR from 'date-fns/locale/pt-BR'
+import { ptBR } from 'date-fns/locale'
 import { useState, useRef, useEffect } from 'react'
 import './home.css'
 
@@ -29,11 +29,19 @@ const eventosMockados = [
   { titulo: '👥 Carlos e Beatriz', inicio: new Date(2025, 11, 3, 19, 0), fim: new Date(2025, 11, 3, 20, 0), status: 'ACEITO' },
 ]
 
+type Evento = {
+  titulo: string
+  inicio: Date
+  fim: Date
+  ministerio?: string
+  status: 'ACEITO' | 'PENDENTE' | 'RECUSADO'
+  type?: 'evento' | 'especial' | 'servir'
+}
 export default function Home() {
-  const [eventos, setEventos] = useState(eventosMockados)
+  const [eventos, setEventos] = useState<Evento[]>(eventosMockados)
   const [dataAtual, setDataAtual] = useState(new Date())
   const [eventoSelecionado, setEventoSelecionado] = useState(null)
-  const [novaData, setNovaData] = useState(null)
+  const [novaData, setNovaData] = useState<Date | null>(null)
   const [novoTitulo, setNovoTitulo] = useState('')
   const [novoTipo, setNovoTipo] = useState('')
   const [novoMinisterio, setNovoMinisterio] = useState('')
@@ -57,14 +65,6 @@ export default function Home() {
     e.preventDefault()
     if (!novoTitulo.trim()) return
 
-    const novoEvento = {
-      titulo: novoTitulo,
-      inicio: novaData,
-      fim: novaData,
-      type: novoTipo || undefined,
-      ministerio: novoMinisterio || undefined,
-      status: 'PENDENTE',
-    }
 
     setEventos([...eventos, novoEvento])
     setNovoTitulo('')
