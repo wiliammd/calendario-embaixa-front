@@ -1,0 +1,148 @@
+.usuarios-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 1100px;
+  margin: 40px auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.filtros {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.filtro-esq select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.filtro-dir input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 260px;
+}
+
+.usuarios-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.usuarios-tabela th,
+.usuarios-tabela td {
+  border: 1px solid #e0e0e0;
+  padding: 10px;
+  text-align: center;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-aceito {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.status-pendente {
+  background-color: #f1c40f;
+  color: #333;
+}
+
+.status-recusado {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.ativo-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.ativo-true {
+  background-color: #3498db;
+  color: white;
+}
+
+.ativo-false {
+  background-color: #7f8c8d;
+  color: white;
+}
+
+.acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn-aceitar,
+.btn-recusar,
+.btn-bloquear {
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-aceitar {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.btn-aceitar:hover {
+  background-color: #27ae60;
+}
+
+.btn-recusar {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-recusar:hover {
+  background-color: #c0392b;
+}
+
+.btn-bloquear {
+  font-size: 13px;
+}
+
+.bloquear {
+  background-color: #7f8c8d;
+  color: white;
+}
+
+.desbloquear {
+  background-color: #3498db;
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.paginacao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}

@@ -1,0 +1,83 @@
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #0074D9, #7FDBFF);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  width: 350px;
+  text-align: center;
+  color: black;
+  animation: fadeIn 0.4s ease;
+}
+
+.login-card h1 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-card input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.login-card button {
+  background-color: #0074D9;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.login-card button:hover {
+  background-color: #005fa3;
+}
+
+.erro {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: -5px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+.criar-conta {
+  margin-top: 20px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.criar-conta span {
+  color: #0074D9;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.criar-conta span:hover {
+  color: #005fa3;
+  text-decoration: underline;
+}
