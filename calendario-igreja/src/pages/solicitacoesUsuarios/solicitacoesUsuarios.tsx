@@ -52,13 +52,14 @@ export default function SolicitacoesUsuarios() {
   useEffect(() => {
     buscarUsuarios();
   }, [statusFiltro, busca, pagina]);
-
+  // @ts-ignore
   const atualizarStatus = (id, novoStatus) => {
     setUsuarios((prev) =>
       prev.map((u) => (u.id === id ? { ...u, status: novoStatus } : u))
     );
   };
 
+  // @ts-ignore
   const alternarAtivo = (id) => {
     setUsuarios((prev) =>
       prev.map((u) =>
@@ -126,10 +127,10 @@ export default function SolicitacoesUsuarios() {
                 <td>
                   <span
                     className={`status-badge ${u.status === "ACEITO"
-                        ? "status-aceito"
-                        : u.status === "PENDENTE"
-                          ? "status-pendente"
-                          : "status-recusado"
+                      ? "status-aceito"
+                      : u.status === "PENDENTE"
+                        ? "status-pendente"
+                        : "status-recusado"
                       }`}
                   >
                     {u.status}
