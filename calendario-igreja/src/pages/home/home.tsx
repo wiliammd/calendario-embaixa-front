@@ -121,9 +121,20 @@ export default function Home() {
           date={dataAtual}
           selectable
           longPressThreshold={1} // 👈 1ms praticamente elimina o delay
-          onSelectSlot={(slotInfo) => setNovaData(slotInfo.start)}
+          onSelectSlot={(slotInfo) => {
+            setNovaData(slotInfo.start); // Abre modal de criação
+          }}
+          onSelectEvent={(event) => {
+            setEventoSelecionado(event); // Abre modal de detalhes
+          }}
+          components={{
+            event: ({ event }) => (
+              <div onClick={() => setEventoSelecionado(event)}>
+                {event.titulo}
+              </div>
+            ),
+          }}
           onNavigate={(novaData) => setDataAtual(novaData)}
-          onSelectEvent={(event) => setEventoSelecionado(event)}
           style={{
             height: '80vh',
             backgroundColor: 'white',
