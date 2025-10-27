@@ -1,129 +1,78 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f4f6f8;
+  color: #222;
 }
 
+/* Layout principal */
+#root {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Container geral */
 .container {
-  padding: 40px;
-  max-width: 1000px;
+  padding: 1rem;
   margin: auto;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
+/* Título */
 h1 {
   text-align: center;
   color: #2c3e50;
-  margin-bottom: 30px;
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
 }
 
-/* Estiliza eventos dentro do calendário */
-/* .rbc-event {
-  background-color: #2ecc71 !important;
-  border: none !important;
-  color: white !important;
-  padding: 4px;
-  font-size: 14px;
-  border-radius: 4px;
-
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  word-wrap: break-word;
-} */
-
-/* Fundo escuro atrás do modal */
+/* =========================
+   MODAL (ajustável ao mobile)
+   ========================= */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
+  padding: 1rem;
 }
 
-/* Caixa principal */
 .modal {
   background: #fff;
-  color: #222;
-  border-radius: 15px;
-  padding: 25px 30px;
-  width: 400px;
-  max-width: 90%;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 400px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
   animation: fadeInUp 0.3s ease-out;
 }
 
-/* Título */
 .modal-title {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 600;
-  margin-bottom: 20px;
-  text-align: center;
+  margin-bottom: 1rem;
   color: #333;
 }
 
-/* Campos */
 .modal-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
+  gap: 12px;
 }
 
 label {
   font-weight: 500;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
+  font-size: 0.95rem;
 }
 
 input,
@@ -132,7 +81,8 @@ select {
   border-radius: 8px;
   border: 1px solid #ccc;
   outline: none;
-  transition: border-color 0.2s;
+  font-size: 1rem;
+  width: 100%;
 }
 
 input:focus,
@@ -140,19 +90,13 @@ select:focus {
   border-color: #007bff;
 }
 
-/* Data selecionada */
-.selected-date {
-  font-size: 0.95rem;
-  color: #444;
-  margin-top: 10px;
-}
-
 /* Botões */
 .modal-buttons {
   display: flex;
+  flex-direction: row;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 1rem;
 }
 
 .btn {
@@ -161,6 +105,7 @@ select:focus {
   border: none;
   cursor: pointer;
   font-weight: 500;
+  font-size: 0.95rem;
   transition: background 0.2s ease;
 }
 
@@ -168,7 +113,6 @@ select:focus {
   background-color: #007bff;
   color: white;
 }
-
 .btn-primary:hover {
   background-color: #0062cc;
 }
@@ -177,12 +121,20 @@ select:focus {
   background-color: #e0e0e0;
   color: #333;
 }
-
 .btn-secondary:hover {
   background-color: #cacaca;
 }
 
-/* Animação de entrada */
+/* Campo título */
+.input-titulo {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Animação modal */
 @keyframes fadeInUp {
   from {
     transform: translateY(40px);
@@ -194,14 +146,86 @@ select:focus {
   }
 }
 
+/* =========================
+   RESPONSIVIDADE
+   ========================= */
 
-.input-titulo {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
+/* Tablets (>=600px) */
+@media (min-width: 600px) {
+  .container {
+    padding: 2rem;
+  }
+  h1 {
+    font-size: 1.8rem;
+  }
 }
 
+/* Desktop (>=900px) */
+@media (min-width: 900px) {
+  .container {
+    max-width: 1000px;
+  }
+  .modal {
+    width: 400px;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 380px) and (max-width: 560px) {
+  #root {
+    padding: 0;
+  }
+
+  .container {
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Faz o calendário expandir até as bordas */
+  .rbc-calendar {
+    width: 100% !important;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Remove possíveis margens internas */
+  .rbc-month-view,
+  .rbc-time-view {
+    margin: 0;
+  }
+
+  /* Deixa o toolbar mais compacto */
+  .rbc-toolbar {
+    padding: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* Ajusta o título e espaçamentos */
+  h1 {
+    font-size: 1.3rem;
+    margin: 1rem 0;
+  }
+
+  .modal {
+    max-width: 95%;
+    width: 95%;
+    border-radius: 10px;
+    padding: 1rem;
+  }
+}
+
+.rbc-month-view {
+  pointer-events: auto;
+}
+
+.rbc-day-bg {
+  cursor: pointer;
+}

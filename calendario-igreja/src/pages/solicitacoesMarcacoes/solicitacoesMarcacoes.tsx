@@ -36,6 +36,7 @@ export default function SolicitacoesMarcacoes() {
     const inicio = (pagina - 1) * 2;
     const paginadas = filtradas.slice(inicio, inicio + 2);
 
+    // @ts-ignore
     setSolicitacoes(paginadas);
     setTotalPaginas(Math.ceil(filtradas.length / 2));
   };
@@ -43,9 +44,11 @@ export default function SolicitacoesMarcacoes() {
   useEffect(() => {
     buscarSolicitacoes();
   }, [statusFiltro, mesSelecionado, pagina]);
-
+  // @ts-ignore
   const atualizarStatus = (id, novoStatus) => {
+    // @ts-ignore
     setSolicitacoes((prev) =>
+      // @ts-ignore
       prev.map((s) => (s.id === id ? { ...s, status: novoStatus } : s))
     );
   };
@@ -119,7 +122,9 @@ export default function SolicitacoesMarcacoes() {
               <th>Ações</th>
             </tr>
           </thead>
+
           <tbody>
+
             {solicitacoes.map((s) => (
               <tr key={s.id}>
                 <td>{s.nome}</td>
@@ -127,13 +132,12 @@ export default function SolicitacoesMarcacoes() {
                 <td>{new Date(s.data).toLocaleDateString()}</td>
                 <td>
                   <span
-                    className={`status-badge ${
-                      s.status === "ACEITO"
+                    className={`status-badge ${s.status === "ACEITO"
                         ? "status-aceito"
                         : s.status === "PENDENTE"
-                        ? "status-pendente"
-                        : "status-recusado"
-                    }`}
+                          ? "status-pendente"
+                          : "status-recusado"
+                      }`}
                   >
                     {s.status}
                   </span>

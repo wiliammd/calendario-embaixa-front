@@ -4,6 +4,8 @@ import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useState, useRef, useEffect } from 'react'
 import './home.css'
+import ModalNovoEvento from '../../components/modals/ModalNovoEvento'
+import ModalDetalhesEvento from '../../components/modals/ModalDetalhesEvento'
 
 const locales = { 'pt-BR': ptBR }
 
@@ -44,18 +46,19 @@ type Evento = {
   type?: 'evento' | 'especial' | 'servir'
 }
 export default function Home() {
-  const [eventos, setEventos] = useState<Evento[]>(eventosMockados)
-  const [dataAtual, setDataAtual] = useState(new Date())
-  const [eventoSelecionado, setEventoSelecionado] = useState(null)
-  const [novaData, setNovaData] = useState<Date | null>(null)
-  const [novoTitulo, setNovoTitulo] = useState('')
-  const [novoTipo, setNovoTipo] = useState('')
-  const [novoMinisterio, setNovoMinisterio] = useState('')
-  const [ministerios, setMinisterios] = useState([])
-  const calendarRef = useRef(null)
+  const [eventos, setEventos] = useState<Evento[]>(eventosMockados);
+  const [dataAtual, setDataAtual] = useState(new Date());
+  const [eventoSelecionado, setEventoSelecionado] = useState(null);
+  const [novaData, setNovaData] = useState<Date | null>(null);
+  const [novoTitulo, setNovoTitulo] = useState('');
+  const [novoTipo, setNovoTipo] = useState('');
+  const [novoMinisterio, setNovoMinisterio] = useState('');
+  const [ministerios, setMinisterios] = useState([]);
+  const [calendarKey, setCalendarKey] = useState(0);
+  const calendarRef = useRef(null);
 
   useEffect(() => {
-    setMinisterios(['Mídia', 'Diaconato', 'Kids'])
+    setMinisterios(['Mídia', 'Diaconato', 'Kids']);
   }, [])
 
   // 🔹 Filtra e ordena eventos
@@ -67,152 +70,131 @@ export default function Home() {
       return 0
     })
 
-  const handleAddEvent = (e) => {
+  const handleAddEvent = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!novoTitulo.trim()) return
+    if (!novoTitulo.trim() || !novaData) return
 
+    const novoEvento: Evento = {
+      titulo: novoTitulo,
+      inicio: novaData,
+      fim: novaData,
+      type: (novoTipo as Evento['type']) || undefined,
+      ministerio: novoMinisterio || undefined,
+      status: 'PENDENTE',
+    }
 
     setEventos([...eventos, novoEvento])
     setNovoTitulo('')
     setNovoTipo('')
     setNovoMinisterio('')
     setNovaData(null)
+    fecharModal()
+  }
+
+  // ✅ Função centralizada para fechar qualquer modal e resetar calendário
+  const fecharModal = () => {
+    setNovaData(null)
+    setEventoSelecionado(null)
+    setCalendarKey((prev) => prev + 1) // força o calendário a resetar seleção
   }
 
   return (
     <div className="container">
       <h1>📅 Calendário de Presenças</h1>
-
-      <Calendar
-        ref={calendarRef}
-        localizer={localizer}
-        events={eventosVisiveis}
-        startAccessor="inicio"
-        endAccessor="fim"
-        date={dataAtual}
-        selectable
-        onSelectSlot={(slotInfo) => setNovaData(slotInfo.start)}
-        onNavigate={(novaData) => setDataAtual(novaData)}
-        onSelectEvent={(event) => setEventoSelecionado(event)}
-        style={{
-          height: '80vh',
-          backgroundColor: 'white',
-          borderRadius: '10px',
-          padding: '10px',
-        }}
-        popup
-        views={['month']}
-        messages={{
-          month: 'Mês',
-          today: 'Hoje',
-          previous: 'Anterior',
-          next: 'Próximo',
-          agenda: 'Agenda',
-          week: 'Semana',
-          day: 'Dia',
-          showMore: (total) => `+${total} mais`,
-        }}
-        eventPropGetter={(event) => {
-          let style = {
-            borderRadius: '5px',
-            border: 'none',
-            color: 'black',
-            paddingLeft: '5px',
-            paddingRight: '5px',
+      <div
+        className="calendar-wrapper"
+        onClickCapture={(e) => {
+          const target = e.target as HTMLElement
+          if (target.classList.contains('rbc-date-cell')) {
+            const dateAttr = target.getAttribute('data-date')
+            if (dateAttr) setNovaData(new Date(dateAttr))
           }
-
-          if (event.status === 'ACEITO') {
-            style.backgroundColor = '#2ecc71' // verde
-            style.color = 'white'
-          } else if (event.status === 'PENDENTE') {
-            style.backgroundColor = '#f1c40f' // amarelo
-          }
-
-          if (event.type === 'evento') {
-            style.background = 'repeating-linear-gradient(45deg, #7FDBFF, #7FDBFF 10px, #2ecc71 10px, #2ecc71 20px)'
-            style.color = 'white'
-            style.border = '1px solid #0074D9'
-          } else if (event.type === 'especial') {
-            style.background = 'repeating-linear-gradient(45deg, #FFB347, #FFB347 10px, #FF7E5F 10px, #FF7E5F 20px)'
-            style.color = 'white'
-            style.border = '1px solid #FF4500'
-          }
-
-          return { style }
         }}
-        components={{
-          event: ({ event }) => <div titulo={event.titulo}>{event.titulo}</div>,
-        }}
+      >
+        <Calendar
+          key={calendarKey}
+          ref={calendarRef}
+          localizer={localizer}
+          events={eventosVisiveis}
+          startAccessor="inicio"
+          endAccessor="fim"
+          date={dataAtual}
+          selectable
+          longPressThreshold={1} // 👈 1ms praticamente elimina o delay
+          onSelectSlot={(slotInfo) => setNovaData(slotInfo.start)}
+          onNavigate={(novaData) => setDataAtual(novaData)}
+          onSelectEvent={(event) => setEventoSelecionado(event)}
+          style={{
+            height: '80vh',
+            backgroundColor: 'white',
+            borderRadius: '10px',
+            padding: '10px',
+          }}
+          popup
+          views={['month']}
+          messages={{
+            month: 'Mês',
+            today: 'Hoje',
+            previous: 'Anterior',
+            next: 'Próximo',
+            agenda: 'Agenda',
+            week: 'Semana',
+            day: 'Dia',
+            showMore: (total) => `+${total} mais`,
+          }}
+          eventPropGetter={(event) => {
+            let style = {
+              borderRadius: '5px',
+              border: 'none',
+              color: 'black',
+              paddingLeft: '5px',
+              paddingRight: '5px',
+            }
+
+            if (event.status === 'ACEITO') {
+              style.backgroundColor = '#2ecc71' // verde
+              style.color = 'white'
+            } else if (event.status === 'PENDENTE') {
+              style.backgroundColor = '#f1c40f' // amarelo
+            }
+
+            if (event.type === 'evento') {
+              style.background = 'repeating-linear-gradient(45deg, #7FDBFF, #7FDBFF 10px, #2ecc71 10px, #2ecc71 20px)'
+              style.color = 'white'
+              style.border = '1px solid #0074D9'
+            } else if (event.type === 'especial') {
+              style.background = 'repeating-linear-gradient(45deg, #FFB347, #FFB347 10px, #FF7E5F 10px, #FF7E5F 20px)'
+              style.color = 'white'
+              style.border = '1px solid #FF4500'
+            }
+
+            return { style }
+          }}
+          components={{
+            event: ({ event }) => <div titulo={event.titulo}>{event.titulo}</div>,
+          }}
+        />
+      </div>
+
+      <ModalDetalhesEvento
+        evento={eventoSelecionado}
+        onClose={() => setEventoSelecionado(null)}
       />
 
-      {/* Modal Detalhes */}
-      {eventoSelecionado && (
-        <div className="modal-overlay" onClick={() => setEventoSelecionado(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Detalhes do Evento</h2>
-            <p><b>Título:</b> {eventoSelecionado.titulo}</p>
-            <p><b>Início:</b> {eventoSelecionado.inicio.toLocaleDateString()}</p>
-            <p><b>Término:</b> {eventoSelecionado.fim.toLocaleDateString()}</p>
-            <p><b>Ministério:</b> {eventoSelecionado.ministerio}</p>
-            <p><b>Status:</b> {eventoSelecionado.status}</p>
-            <button onClick={() => setEventoSelecionado(null)}>Fechar</button>
-          </div>
-        </div>
-      )}
+      <ModalNovoEvento
+        isOpen={!!novaData}
+        onClose={() => setNovaData(null)}
+        novaData={novaData}
+        ministerios={ministerios}
+        novoTitulo={novoTitulo}
+        setNovoTitulo={setNovoTitulo}
+        novoTipo={novoTipo}
+        setNovoTipo={setNovoTipo}
+        novoMinisterio={novoMinisterio}
+        setNovoMinisterio={setNovoMinisterio}
+        handleAddEvent={handleAddEvent}
+      />
 
-      {/* Modal Novo Evento */}
-      {novaData && (
-        <div className="modal-overlay" onClick={() => setNovaData(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="modal-titulo">Novo Evento</h2>
-            <form onSubmit={handleAddEvent} className="modal-form">
-              <div className="form-group">
-                <label>Título:</label>
-                <input
-                  type="text"
-                  value={novoTitulo}
-                  onChange={(e) => setNovoTitulo(e.target.value)}
-                  placeholder="Ex: 👥 Reunião com equipe"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Tipo (opcional):</label>
-                <select value={novoTipo} onChange={(e) => setNovoTipo(e.target.value)}>
-                  <option value="servir">Servir</option>
-                  <option value="evento">Evento</option>
-                  <option value="especial">Especial</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Ministério (opcional):</label>
-                <select
-                  value={novoMinisterio}
-                  onChange={(e) => setNovoMinisterio(e.target.value)}
-                >
-                  <option value="">Selecione...</option>
-                  {ministerios.map((m) => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              </div>
-              <p className="selected-date">
-                📅 <b>Data selecionada:</b> {novaData.toLocaleDateString()}
-              </p>
-              <div className="modal-buttons">
-                <button type="submit" className="btn btn-primary">Salvar</button>
-                <button
-                  type="button"
-                  onClick={() => setNovaData(null)}
-                  className="btn btn-secondary"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
