@@ -108,7 +108,7 @@ export default function Home() {
         endAccessor="fim"
         date={dataAtual}
         selectable
-        longPressThreshold={1} // elimina delay no mobile
+        longPressThreshold={2} // elimina delay no mobile
         onSelectSlot={(slotInfo) => setNovaData(slotInfo.start)}
         onSelectEvent={(event) => setEventoSelecionado(event)}
         onNavigate={(novaData) => setDataAtual(novaData)}
