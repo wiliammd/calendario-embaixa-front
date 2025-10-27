@@ -2,17 +2,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 20px;
   background: linear-gradient(135deg, #7FDBFF, #0074D9);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .cadastro-card {
   background: #fff;
-  padding: 40px 30px;
+  padding: 30px 20px;
   border-radius: 15px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-  width: 380px;
+  width: 100%;
+  max-width: 400px;
   text-align: center;
   color: #222;
   animation: fadeIn 0.4s ease;
@@ -20,7 +22,7 @@
 
 .cadastro-card h1 {
   margin-bottom: 25px;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 }
 
 .cadastro-card form {
@@ -35,11 +37,14 @@
   margin-bottom: 5px;
 }
 
-.cadastro-card input {
+.cadastro-card input,
+.cadastro-card select {
+  width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
+  box-sizing: border-box;
 }
 
 .cadastro-card button {
@@ -74,12 +79,14 @@
   margin-top: 20px;
   font-size: 0.95rem;
   color: #555;
+  text-align: center;
 }
 
 .voltar-login span {
   color: #0074D9;
   font-weight: 600;
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
 .voltar-login span:hover {
@@ -91,19 +98,27 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin-bottom: 15px;
-  font-size: 14px;
-  background-color: #fff;
-  cursor: pointer;
-  transition: border-color 0.3s;
+/* Mobile-first adjustments */
+@media (max-width: 480px) {
+  .cadastro-card {
+    padding: 25px 15px;
+  }
+
+  .cadastro-card h1 {
+    font-size: 1.4rem;
+  }
+
+  .cadastro-card button {
+    font-size: 0.95rem;
+  }
 }
 
-select:focus {
-  border-color: #3498db;
-  outline: none;
+@media (min-width: 481px) and (max-width: 768px) {
+  .cadastro-card {
+    padding: 30px 20px;
+  }
+
+  .cadastro-card h1 {
+    font-size: 1.5rem;
+  }
 }

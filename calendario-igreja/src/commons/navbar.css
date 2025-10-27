@@ -1,23 +1,29 @@
+/* Navbar base - Mobile first */
 .navbar {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
   background-color: #004aad;
   color: white;
-  padding: 10px 20px;
+  padding: 15px 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  gap: 10px;
 }
 
 .navbar-logo {
   font-size: 1.2rem;
   font-weight: bold;
+  text-align: center;
 }
 
 .navbar-links {
   list-style: none;
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  gap: 8px;
   margin: 0;
+  width: 100%;
+  text-align: center;
 }
 
 .navbar-links a {
@@ -25,6 +31,8 @@
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
+  display: block;
+  padding: 5px 0;
 }
 
 .navbar-links a:hover {
@@ -34,4 +42,25 @@
 .active a {
   border-bottom: 2px solid #ffdf6c;
   padding-bottom: 2px;
+}
+
+/* Para telas maiores (tablet/desktop) */
+@media (min-width: 768px) {
+  .navbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+  }
+
+  .navbar-links {
+    flex-direction: row;
+    gap: 20px;
+    width: auto;
+    text-align: left;
+  }
+
+  .navbar-links a {
+    padding: 0;
+  }
 }
