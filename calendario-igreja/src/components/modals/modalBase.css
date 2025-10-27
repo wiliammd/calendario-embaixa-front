@@ -132,3 +132,42 @@
     margin: 0 5px;
   }
 }
+
+
+.modal-lista-eventos {
+  max-height: 60vh; /* altura máxima do modal, adaptável */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 4px; /* espaço para scrollbar */
+}
+
+/* Estilo individual de cada evento */
+.modal-evento {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Scrollbar mais fina e discreta */
+.modal-lista-eventos::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-lista-eventos::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+
+.modal-lista-eventos::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Mobile-first: ocupa 100% do modal por padrão */
+@media (min-width: 480px) {
+  .modal-lista-eventos {
+    max-height: 50vh; /* ajusta para desktop */
+  }
+}
