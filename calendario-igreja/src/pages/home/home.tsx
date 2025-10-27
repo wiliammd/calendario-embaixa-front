@@ -5,6 +5,7 @@ import { ptBR } from 'date-fns/locale'
 import { useState, useRef, useEffect } from 'react'
 import './home.css'
 import ModalNovoEvento from '../../components/modals/ModalNovoEvento'
+import ModalBase from '../../components/modals/ModalBase'
 import ModalDetalhesEvento from '../../components/modals/ModalDetalhesEvento'
 
 const locales = { 'pt-BR': ptBR }
@@ -45,6 +46,12 @@ type Evento = {
   status: 'ACEITO' | 'PENDENTE' | 'RECUSADO'
   type?: 'evento' | 'especial' | 'servir'
 }
+
+type PreModalData = {
+  date: Date
+  eventosDia: Evento[]
+}
+
 export default function Home() {
   const [eventos, setEventos] = useState<Evento[]>(eventosMockados)
   const [dataAtual, setDataAtual] = useState(new Date())
@@ -56,6 +63,9 @@ export default function Home() {
   const [ministerios, setMinisterios] = useState<string[]>([])
   const [calendarKey, setCalendarKey] = useState(0)
   const calendarRef = useRef(null)
+  const [preModalData, setPreModalData] = useState<PreModalData | null>(null)
+
+
 
   useEffect(() => {
     setMinisterios(['Mídia', 'Diaconato', 'Kids'])
@@ -69,6 +79,27 @@ export default function Home() {
       return 0
     })
 
+  // 🔹 Função central para fechar qualquer modal
+  const fecharModal = () => {
+    setNovaData(null)
+    setEventoSelecionado(null)
+    setPreModalData(null)
+    setCalendarKey((prev) => prev + 1)
+  }
+  // 🔹 Pré-modal: decide se o usuário quer ver detalhes ou criar evento
+  const handleDayClick = (date: Date) => {
+    const eventosDia = eventosVisiveis.filter(
+      (ev) =>
+        ev.inicio.toDateString() === date.toDateString() ||
+        ev.fim.toDateString() === date.toDateString()
+    )
+
+    if (eventosDia.length > 0) {
+      setPreModalData({ date, eventosDia }) // abre pré-modal
+    } else {
+      setNovaData(date) // abre modal de criação direto
+    }
+  }
   const handleAddEvent = (e: React.FormEvent) => {
     e.preventDefault()
     if (!novoTitulo.trim() || !novaData) return
@@ -90,73 +121,127 @@ export default function Home() {
     fecharModal()
   }
 
-  const fecharModal = () => {
-    setNovaData(null)
-    setEventoSelecionado(null)
-    setCalendarKey((prev) => prev + 1) // força o calendário a resetar seleção
-  }
-
   return (
     <div className="container">
       <h1>📅 Calendário de Presenças</h1>
-      <Calendar
-        key={calendarKey}
-        ref={calendarRef}
-        localizer={localizer}
-        events={eventosVisiveis}
-        startAccessor="inicio"
-        endAccessor="fim"
-        date={dataAtual}
-        selectable
-        longPressThreshold={2} // elimina delay no mobile
-        onSelectSlot={(slotInfo) => setNovaData(slotInfo.start)}
-        onSelectEvent={(event) => setEventoSelecionado(event)}
-        onNavigate={(novaData) => setDataAtual(novaData)}
-        style={{
-          height: '80vh',
-          backgroundColor: 'white',
-          borderRadius: '10px',
-          padding: '10px',
-        }}
-        popup
-        views={['month']}
-        messages={{
-          month: 'Mês',
-          today: 'Hoje',
-          previous: 'Anterior',
-          next: 'Próximo',
-          agenda: 'Agenda',
-          week: 'Semana',
-          day: 'Dia',
-          showMore: (total) => `+${total} mais`,
-        }}
-        eventPropGetter={(event) => {
-          let style: React.CSSProperties = {
-            borderRadius: '5px',
-            border: 'none',
-            color: 'black',
-            padding: '0 5px',
-          }
-          if (event.status === 'ACEITO') style.backgroundColor = '#2ecc71'
-          else if (event.status === 'PENDENTE') style.backgroundColor = '#f1c40f'
-          if (event.type === 'evento') style.background = 'repeating-linear-gradient(45deg, #7FDBFF, #7FDBFF 10px, #2ecc71 10px, #2ecc71 20px)'
-          if (event.type === 'especial') style.background = 'repeating-linear-gradient(45deg, #FFB347, #FFB347 10px, #FF7E5F 10px, #FF7E5F 20px)'
-          return { style }
-        }}
-        components={{
-          // apenas renderiza o título, clique é gerenciado pelo Calendar
-          event: ({ event }) => <div>{event.titulo}</div>,
-        }}
-      />
 
+      <div className="calendar-wrapper">
+        <Calendar
+          key={calendarKey}
+          ref={calendarRef}
+          localizer={localizer}
+          events={eventosVisiveis}
+          startAccessor="inicio"
+          endAccessor="fim"
+          date={dataAtual}
+          selectable
+          longPressThreshold={1}
+          onSelectSlot={(slotInfo) => {
+            const data = slotInfo.start
+            const eventosDoDia = eventosVisiveis.filter(
+              (ev) =>
+                ev.inicio.toDateString() === data.toDateString()
+            )
+
+            setPreModalData({
+              data,
+              eventosDoDia
+            })
+          }}
+          onSelectEvent={(event) => {
+            setEventoSelecionado([event]) // abrir detalhe diretamente se clicar no evento
+          }}
+          onNavigate={(novaData) => setDataAtual(novaData)}
+          views={['month']}
+          style={{ height: '80vh', backgroundColor: 'white', borderRadius: '10px', padding: '10px' }}
+          popup
+          messages={{
+            month: 'Mês',
+            today: 'Hoje',
+            previous: 'Anterior',
+            next: 'Próximo',
+            agenda: 'Agenda',
+            week: 'Semana',
+            day: 'Dia',
+            showMore: (total) => `+${total} mais`,
+          }}
+          eventPropGetter={(event) => {
+            let style = {
+              borderRadius: '5px',
+              border: 'none',
+              color: 'black',
+              paddingLeft: '5px',
+              paddingRight: '5px',
+            }
+
+            if (event.status === 'ACEITO') style.backgroundColor = '#2ecc71'
+            else if (event.status === 'PENDENTE') style.backgroundColor = '#f1c40f'
+
+            if (event.type === 'evento') {
+              style.background =
+                'repeating-linear-gradient(45deg, #7FDBFF, #7FDBFF 10px, #2ecc71 10px, #2ecc71 20px)'
+              style.color = 'white'
+              style.border = '1px solid #0074D9'
+            } else if (event.type === 'especial') {
+              style.background =
+                'repeating-linear-gradient(45deg, #FFB347, #FFB347 10px, #FF7E5F 10px, #FF7E5F 20px)'
+              style.color = 'white'
+              style.border = '1px solid #FF4500'
+            }
+
+            return { style }
+          }}
+          components={{
+            event: ({ event }) => (
+              <div onClick={() => setEventoSelecionado([event])}>
+                {event.titulo}
+              </div>
+            ),
+          }}
+        />
+      </div>
+
+      {/* Pre Modal: Escolher entre Ver Detalhes ou Cadastrar */}
+      {preModalData && (
+        <ModalBase
+          isOpen={!!preModalData}
+          onClose={() => setPreModalData(null)}
+          title={`📅 Dia ${preModalData.data.toLocaleDateString()}`}
+        >
+          <p>O que você deseja fazer neste dia?</p>
+          <div className="modal-buttons">
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                setEventoSelecionado(preModalData.eventosDoDia)
+                setPreModalData(null)
+              }}
+            >
+              Ver Detalhes
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => {
+                setNovaData(preModalData.data)
+                setPreModalData(null)
+              }}
+            >
+              Cadastrar
+            </button>
+          </div>
+        </ModalBase>
+      )}
+
+      {/* Modal de Detalhes */}
       <ModalDetalhesEvento
-        evento={eventoSelecionado}
-        onClose={fecharModal}
+        eventos={eventoSelecionado}
+        onClose={() => setEventoSelecionado(null)}
       />
 
+      {/* Modal de Novo Evento */}
       <ModalNovoEvento
         isOpen={!!novaData}
-        onClose={fecharModal}
+        onClose={() => setNovaData(null)}
         novaData={novaData}
         ministerios={ministerios}
         novoTitulo={novoTitulo}
@@ -169,4 +254,7 @@ export default function Home() {
       />
     </div>
   )
+
+
+
 }
