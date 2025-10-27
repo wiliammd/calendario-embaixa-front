@@ -44,6 +44,8 @@ export default function App() {
             isAdmin ? <SolicitacoesUsuarios /> : <Navigate to="/calendario" />
           }
         />
+        {/* Rota catch-all: qualquer caminho não definido */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   )
