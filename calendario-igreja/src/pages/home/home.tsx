@@ -46,24 +46,23 @@ type Evento = {
   type?: 'evento' | 'especial' | 'servir'
 }
 export default function Home() {
-  const [eventos, setEventos] = useState<Evento[]>(eventosMockados);
-  const [dataAtual, setDataAtual] = useState(new Date());
-  const [eventoSelecionado, setEventoSelecionado] = useState(null);
-  const [novaData, setNovaData] = useState<Date | null>(null);
-  const [novoTitulo, setNovoTitulo] = useState('');
-  const [novoTipo, setNovoTipo] = useState('');
-  const [novoMinisterio, setNovoMinisterio] = useState('');
-  const [ministerios, setMinisterios] = useState([]);
-  const [calendarKey, setCalendarKey] = useState(0);
-  const calendarRef = useRef(null);
+  const [eventos, setEventos] = useState<Evento[]>(eventosMockados)
+  const [dataAtual, setDataAtual] = useState(new Date())
+  const [eventoSelecionado, setEventoSelecionado] = useState<Evento | null>(null)
+  const [novaData, setNovaData] = useState<Date | null>(null)
+  const [novoTitulo, setNovoTitulo] = useState('')
+  const [novoTipo, setNovoTipo] = useState('')
+  const [novoMinisterio, setNovoMinisterio] = useState('')
+  const [ministerios, setMinisterios] = useState<string[]>([])
+  const [calendarKey, setCalendarKey] = useState(0)
+  const calendarRef = useRef(null)
 
   useEffect(() => {
-    setMinisterios(['Mídia', 'Diaconato', 'Kids']);
+    setMinisterios(['Mídia', 'Diaconato', 'Kids'])
   }, [])
 
-  // 🔹 Filtra e ordena eventos
   const eventosVisiveis = eventos
-    .filter((e) => e.status !== 'RECUSADO') // ❌ não mostra recusados
+    .filter((e) => e.status !== 'RECUSADO')
     .sort((a, b) => {
       if (a.type && !b.type) return -1
       if (!a.type && b.type) return 1
@@ -91,7 +90,6 @@ export default function Home() {
     fecharModal()
   }
 
-  // ✅ Função centralizada para fechar qualquer modal e resetar calendário
   const fecharModal = () => {
     setNovaData(null)
     setEventoSelecionado(null)
@@ -101,100 +99,64 @@ export default function Home() {
   return (
     <div className="container">
       <h1>📅 Calendário de Presenças</h1>
-      <div
-        className="calendar-wrapper"
-        onClickCapture={(e) => {
-          const target = e.target as HTMLElement
-          if (target.classList.contains('rbc-date-cell')) {
-            const dateAttr = target.getAttribute('data-date')
-            if (dateAttr) setNovaData(new Date(dateAttr))
-          }
+      <Calendar
+        key={calendarKey}
+        ref={calendarRef}
+        localizer={localizer}
+        events={eventosVisiveis}
+        startAccessor="inicio"
+        endAccessor="fim"
+        date={dataAtual}
+        selectable
+        longPressThreshold={1} // elimina delay no mobile
+        onSelectSlot={(slotInfo) => setNovaData(slotInfo.start)}
+        onSelectEvent={(event) => setEventoSelecionado(event)}
+        onNavigate={(novaData) => setDataAtual(novaData)}
+        style={{
+          height: '80vh',
+          backgroundColor: 'white',
+          borderRadius: '10px',
+          padding: '10px',
         }}
-      >
-        <Calendar
-          key={calendarKey}
-          ref={calendarRef}
-          localizer={localizer}
-          events={eventosVisiveis}
-          startAccessor="inicio"
-          endAccessor="fim"
-          date={dataAtual}
-          selectable
-          longPressThreshold={1} // 👈 1ms praticamente elimina o delay
-          onSelectSlot={(slotInfo) => {
-            setNovaData(slotInfo.start); // Abre modal de criação
-          }}
-          onSelectEvent={(event) => {
-            setEventoSelecionado(event); // Abre modal de detalhes
-          }}
-          components={{
-            event: ({ event }) => (
-              <div onClick={() => setEventoSelecionado(event)}>
-                {event.titulo}
-              </div>
-            ),
-          }}
-          onNavigate={(novaData) => setDataAtual(novaData)}
-          style={{
-            height: '80vh',
-            backgroundColor: 'white',
-            borderRadius: '10px',
-            padding: '10px',
-          }}
-          popup
-          views={['month']}
-          messages={{
-            month: 'Mês',
-            today: 'Hoje',
-            previous: 'Anterior',
-            next: 'Próximo',
-            agenda: 'Agenda',
-            week: 'Semana',
-            day: 'Dia',
-            showMore: (total) => `+${total} mais`,
-          }}
-          eventPropGetter={(event) => {
-            let style = {
-              borderRadius: '5px',
-              border: 'none',
-              color: 'black',
-              paddingLeft: '5px',
-              paddingRight: '5px',
-            }
-
-            if (event.status === 'ACEITO') {
-              style.backgroundColor = '#2ecc71' // verde
-              style.color = 'white'
-            } else if (event.status === 'PENDENTE') {
-              style.backgroundColor = '#f1c40f' // amarelo
-            }
-
-            if (event.type === 'evento') {
-              style.background = 'repeating-linear-gradient(45deg, #7FDBFF, #7FDBFF 10px, #2ecc71 10px, #2ecc71 20px)'
-              style.color = 'white'
-              style.border = '1px solid #0074D9'
-            } else if (event.type === 'especial') {
-              style.background = 'repeating-linear-gradient(45deg, #FFB347, #FFB347 10px, #FF7E5F 10px, #FF7E5F 20px)'
-              style.color = 'white'
-              style.border = '1px solid #FF4500'
-            }
-
-            return { style }
-          }}
-          components={{
-            event: ({ event }) => <div titulo={event.titulo}>{event.titulo}</div>,
-          }}
-        />
-      </div>
+        popup
+        views={['month']}
+        messages={{
+          month: 'Mês',
+          today: 'Hoje',
+          previous: 'Anterior',
+          next: 'Próximo',
+          agenda: 'Agenda',
+          week: 'Semana',
+          day: 'Dia',
+          showMore: (total) => `+${total} mais`,
+        }}
+        eventPropGetter={(event) => {
+          let style: React.CSSProperties = {
+            borderRadius: '5px',
+            border: 'none',
+            color: 'black',
+            padding: '0 5px',
+          }
+          if (event.status === 'ACEITO') style.backgroundColor = '#2ecc71'
+          else if (event.status === 'PENDENTE') style.backgroundColor = '#f1c40f'
+          if (event.type === 'evento') style.background = 'repeating-linear-gradient(45deg, #7FDBFF, #7FDBFF 10px, #2ecc71 10px, #2ecc71 20px)'
+          if (event.type === 'especial') style.background = 'repeating-linear-gradient(45deg, #FFB347, #FFB347 10px, #FF7E5F 10px, #FF7E5F 20px)'
+          return { style }
+        }}
+        components={{
+          // apenas renderiza o título, clique é gerenciado pelo Calendar
+          event: ({ event }) => <div>{event.titulo}</div>,
+        }}
+      />
 
       <ModalDetalhesEvento
         evento={eventoSelecionado}
-        onClose={() => setEventoSelecionado(null)}
+        onClose={fecharModal}
       />
 
       <ModalNovoEvento
         isOpen={!!novaData}
-        onClose={() => setNovaData(null)}
+        onClose={fecharModal}
         novaData={novaData}
         ministerios={ministerios}
         novoTitulo={novoTitulo}
@@ -205,7 +167,6 @@ export default function Home() {
         setNovoMinisterio={setNovoMinisterio}
         handleAddEvent={handleAddEvent}
       />
-
     </div>
   )
 }
