@@ -46,11 +46,11 @@ const handleSubmit = async (e: React.FormEvent) => {
       ministerioId: ministerio, // aqui é o UUID
     });
 
+    setSucesso("Usuário cadastrado com sucesso! Aguarde aprovação do administrador.");
     toastSucesso("Usuário cadastrado com sucesso! Aguarde aprovação do administrador.");
-
     setTimeout(() => {
       navigate("/login");
-    }, 2200);
+    }, 1200);
 
   } catch (error: any) {
     console.error(error);
@@ -59,6 +59,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       setErro(error.response.data.message);
     } else {
       setErro("Erro ao cadastrar usuário.");
+      
     }
   }
 };
@@ -109,8 +110,8 @@ const handleSubmit = async (e: React.FormEvent) => {
             ))}
           </select>
 
-          {/* {erro && <p className="erro">{erro}</p>} */}
-          {/* {sucesso && <p className="sucesso">{sucesso}</p>} */}
+          {erro && <p className="erro">{erro}</p>}
+          {sucesso && <p className="sucesso">{sucesso}</p>}
 
           <button type="submit">Cadastrar</button>
         </form>

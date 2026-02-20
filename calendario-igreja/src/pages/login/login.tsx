@@ -23,6 +23,7 @@ export type Usuario = {
 export default function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate()
@@ -45,6 +46,7 @@ export default function Login({ onLogin }: LoginProps) {
       });
 
 
+      setErro('');
       navigate('/calendario');
 
     } catch (error: any) {
@@ -52,7 +54,7 @@ export default function Login({ onLogin }: LoginProps) {
       //   error.response?.data?.message ||
       //   'Erro ao fazer login.';
       toastErro("Dados inválidos ou cadastro não aprovado. Tente novamente.");
-      // setErro(message);
+      setErro("Dados inválidos ou cadastro não aprovado. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -81,7 +83,7 @@ export default function Login({ onLogin }: LoginProps) {
             required
           />
 
-          {/* {erro && <p className="erro">{erro}</p>} */}
+          {erro && <p className="erro">{erro}</p>}
 
           <button type="submit" disabled={loading}>
             {loading ? 'Entrando...' : 'Entrar'}
