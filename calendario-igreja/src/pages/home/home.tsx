@@ -143,7 +143,7 @@ export default function Home({ usuario }: Usuario) {
       const payload = {
         titulo: tituloFinal,
         data: novaData,
-        hora: novaHora || null,
+        horario: novaHora || null,
         tipo: tipoFinal || null,
         ministerioId: tipoFinal === 'servir' ? novoMinisterio : null
       }
