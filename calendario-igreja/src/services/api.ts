@@ -4,7 +4,7 @@ import { tokenService } from "./tokenService";
 import { authService } from "./authService";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "https://calendario-embaixa-back-production.up.railway.app",
 });
 
 /**
