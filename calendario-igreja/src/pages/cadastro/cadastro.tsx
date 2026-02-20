@@ -50,7 +50,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     toastSucesso("Usuário cadastrado com sucesso! Aguarde aprovação do administrador.");
     setTimeout(() => {
       navigate("/login");
-    }, 1200);
+    }, 2200);
 
   } catch (error: any) {
     console.error(error);

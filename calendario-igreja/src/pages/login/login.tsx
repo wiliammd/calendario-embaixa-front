@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 import { jwtDecode } from 'jwt-decode';
-import { toastErro } from '../../services/toast';
+import { toastErro, toastSucesso } from '../../services/toast';
 
 interface LoginProps {
   onLogin: (user: {
@@ -28,35 +28,42 @@ export default function Login({ onLogin }: LoginProps) {
 
   const navigate = useNavigate()
 
-
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+    setLoading(true);       // inicia loading
+    setErro('');            // limpa erro antigo
 
     try {
       const data = await authService.login(email, senha);
 
+      // salva tokens
       tokenService.setTokens(data.accessToken, data.refreshToken);
-      const decoded: Usuario = jwtDecode(data.accessToken)
-      tokenService.setUsuario(decoded)
+      const decoded: Usuario = jwtDecode(data.accessToken);
+      tokenService.setUsuario(decoded);
 
+      // chama callback de login
       onLogin({
         nome: decoded.nome,
         email: decoded.email,
         role: decoded.role
       });
 
+      // toast de sucesso
+      toastSucesso('Login realizado com sucesso!');
 
-      setErro('');
-      navigate('/calendario');
+      // navega após pequeno delay (opcional)
+      setTimeout(() => navigate('/calendario'), 500);
 
     } catch (error: any) {
-      // const message =
-      //   error.response?.data?.message ||
-      //   'Erro ao fazer login.';
-      toastErro("Dados inválidos ou cadastro não aprovado. Tente novamente.");
-      setErro("Dados inválidos ou cadastro não aprovado. Tente novamente.");
+      // mostra erro
+      const mensagem =
+        error.response?.data?.message ||
+        "Dados inválidos ou cadastro não aprovado. Tente novamente.";
+
+      setErro(mensagem);        // exibe mensagem no componente
+      toastErro(mensagem);      // toast independente
     } finally {
-      setLoading(false);
+      setLoading(false);        // desliga loading
     }
   }
 

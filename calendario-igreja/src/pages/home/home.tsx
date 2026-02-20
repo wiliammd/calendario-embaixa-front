@@ -9,6 +9,7 @@ import ModalNovoEvento from '../../components/modals/ModalNovoEvento'
 import { eventService } from '../../services/EventoService'
 import type { Usuario } from '../login/login'
 import './home.css'
+import { toastErro } from '../../services/toast'
 
 const locales = { 'pt-BR': ptBR }
 
@@ -158,7 +159,13 @@ export default function Home({ usuario }: Usuario) {
       fecharModal()
 
     } catch (error) {
-      console.error('Erro ao criar evento')
+      {
+        toastErro(error.response.data.message);
+        setNovoTitulo('')
+        setNovoTipo('')
+        setNovoMinisterio('')
+        fecharModal()
+      }
     }
   }
 

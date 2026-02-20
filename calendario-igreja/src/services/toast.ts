@@ -7,5 +7,5 @@ export const toastSucesso = (mensagem:string) => {
 
 // Mensagem de erro
 export const toastErro = (mensagem:string) => {
-  toast.error(mensagem);
+  toast.error(mensagem, { autoClose: 5000 }); // fecha após 8 segundos
 }
