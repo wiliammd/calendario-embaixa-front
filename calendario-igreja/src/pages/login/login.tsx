@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 import { jwtDecode } from 'jwt-decode';
+import { toastErro } from '../../services/toast';
 
 interface LoginProps {
   onLogin: (user: {
@@ -22,7 +23,6 @@ export type Usuario = {
 export default function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate()
@@ -43,17 +43,16 @@ export default function Login({ onLogin }: LoginProps) {
         email: decoded.email,
         role: decoded.role
       });
-      
 
-      setErro('');
+
       navigate('/calendario');
 
     } catch (error: any) {
-      const message =
-        error.response?.data?.message ||
-        'Erro ao fazer login.';
-
-      setErro(message);
+      // const message =
+      //   error.response?.data?.message ||
+      //   'Erro ao fazer login.';
+      toastErro("Dados inválidos ou cadastro não aprovado. Tente novamente.");
+      // setErro(message);
     } finally {
       setLoading(false);
     }
@@ -82,7 +81,7 @@ export default function Login({ onLogin }: LoginProps) {
             required
           />
 
-          {erro && <p className="erro">{erro}</p>}
+          {/* {erro && <p className="erro">{erro}</p>} */}
 
           <button type="submit" disabled={loading}>
             {loading ? 'Entrando...' : 'Entrar'}

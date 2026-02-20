@@ -9,6 +9,8 @@ import SolicitacoesUsuarios from './pages/solicitacoesUsuarios/solicitacoesUsuar
 import Navbar from './commons/navbar.tsx';
 import NavbarUser from './commons/navbarUser.tsx';
 import type { Usuario } from './services/tokenService';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
@@ -46,6 +48,16 @@ export default function App() {
 
   return (
     <>
+     <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
       {mostrarNavbar && (isAdmin ? <Navbar /> : <NavbarUser />)}
 
       <Routes>

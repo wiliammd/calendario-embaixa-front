@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './cadastro.css';
 import { eventService, type Ministerio } from '../../services/EventoService';
 import { usuarioService } from '../../services/UsuarioService';
+import { toastSucesso } from '../../services/toast';
 
 export default function Cadastro() {
   const [nome, setNome] = useState('')
@@ -45,11 +46,11 @@ const handleSubmit = async (e: React.FormEvent) => {
       ministerioId: ministerio, // aqui é o UUID
     });
 
-    setSucesso("Usuário cadastrado com sucesso!");
+    toastSucesso("Usuário cadastrado com sucesso! Aguarde aprovação do administrador.");
 
     setTimeout(() => {
       navigate("/login");
-    }, 1200);
+    }, 2200);
 
   } catch (error: any) {
     console.error(error);
@@ -108,8 +109,8 @@ const handleSubmit = async (e: React.FormEvent) => {
             ))}
           </select>
 
-          {erro && <p className="erro">{erro}</p>}
-          {sucesso && <p className="sucesso">{sucesso}</p>}
+          {/* {erro && <p className="erro">{erro}</p>} */}
+          {/* {sucesso && <p className="sucesso">{sucesso}</p>} */}
 
           <button type="submit">Cadastrar</button>
         </form>
