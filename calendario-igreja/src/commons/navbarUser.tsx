@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import './navbar.css'
 import { tokenService } from '../services/tokenService' // ajuste o caminho se necessário
 
-export default function Navbar() {
+export default function NavbarUser() {
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -13,18 +13,9 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo">📋 Painel do Administrador</div>
+      <div className="navbar-logo">📋 Painel do Usuário</div>
 
       <ul className="navbar-links">
-        <li className={location.pathname === '/calendario' ? 'active' : ''}>
-          <Link to="/calendario">🏠 Home</Link>
-        </li>
-        <li className={location.pathname === '/solicitacoes-marcacoes' ? 'active' : ''}>
-          <Link to="/solicitacoes-marcacoes">📅 Solicitações de Marcações</Link>
-        </li>
-        <li className={location.pathname === '/solicitacoes-cadastro' ? 'active' : ''}>
-          <Link to="/solicitacoes-cadastro">👥 Solicitações de Cadastro</Link>
-        </li>
         {/* 🔹 Logout */}
         <li>
           <button className="logout-button" onClick={handleLogout}>

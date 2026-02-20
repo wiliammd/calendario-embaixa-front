@@ -1,24 +1,18 @@
 import { useEffect, useState } from "react";
 import "./solicitacoesUsuarios.css";
+import { usuarioService } from "../../services/UsuarioService";
 
 type Usuario = {
-  id: number
+  id: string;
   nome: string
   email: string
-  ministerio: string
+  ministerioNome: string
+  ministerioId: string
   status: string
   ativo: boolean
+  role: "ADMIN" | "USER"
 }
 
-// 🔹 Mock simulando resposta do backend
-const usuariosMock = [
-  { id: 1, nome: "Marcos Silva", email: "marcos@email.com", ministerio: "Mídia", status: "PENDENTE", ativo: true },
-  { id: 2, nome: "Ana Souza", email: "ana@email.com", ministerio: "Louvor", status: "ACEITO", ativo: true },
-  { id: 3, nome: "Paulo Oliveira", email: "paulo@email.com", ministerio: "Kids", status: "RECUSADO", ativo: false },
-  { id: 4, nome: "Camila Torres", email: "camila@email.com", ministerio: "Diaconato", status: "PENDENTE", ativo: true },
-  { id: 5, nome: "Lucas Andrade", email: "lucas@email.com", ministerio: "Mídia", status: "PENDENTE", ativo: false },
-  { id: 6, nome: "Fernanda Lima", email: "fer@email.com", ministerio: "Louvor", status: "ACEITO", ativo: true },
-];
 
 export default function SolicitacoesUsuarios() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -27,46 +21,54 @@ export default function SolicitacoesUsuarios() {
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
 
-  const buscarUsuarios = () => {
-    // 🔸 Simulação de backend filtrando e paginando
-    let filtradas = usuariosMock.filter((u) =>
-      statusFiltro === "TODOS" ? true : u.status === statusFiltro
-    );
-
-    if (busca.trim()) {
-      const termo = busca.toLowerCase();
-      filtradas = filtradas.filter(
-        (u) =>
-          u.nome.toLowerCase().includes(termo) ||
-          u.email.toLowerCase().includes(termo)
+  const buscarUsuarios = async () => {
+    try {
+      const response = await usuarioService.listar(
+        pagina - 1, // backend começa do 0
+        4,
+        statusFiltro,
+        busca
       );
+
+      setUsuarios(response.content);
+      setTotalPaginas(response.totalPages);
+
+    } catch (error) {
+      console.error("Erro ao buscar usuários", error);
     }
-
-    const inicio = (pagina - 1) * 4;
-    const paginadas = filtradas.slice(inicio, inicio + 4);
-
-    setUsuarios(paginadas);
-    setTotalPaginas(Math.ceil(filtradas.length / 4));
   };
 
   useEffect(() => {
     buscarUsuarios();
   }, [statusFiltro, busca, pagina]);
-  // @ts-ignore
-  const atualizarStatus = (id, novoStatus) => {
-    setUsuarios((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, status: novoStatus } : u))
-    );
+
+
+  const tornarAdmin = async (id: string, admin: boolean) => {
+    try {
+      await usuarioService.tornarAdmin(id, admin);
+      buscarUsuarios();
+    } catch (error) {
+      console.error("Erro ao tornar admin", error);
+    }
   };
 
-  // @ts-ignore
-  const alternarAtivo = (id) => {
-    setUsuarios((prev) =>
-      prev.map((u) =>
-        u.id === id ? { ...u, ativo: !u.ativo } : u
-      )
-    );
-  };
+  const atualizarStatus = async (id: string, novoStatus: string) => {
+  try {
+    await usuarioService.atualizarStatus(id, novoStatus);
+    buscarUsuarios();
+  } catch (error) {
+    console.error("Erro ao atualizar status", error);
+  }
+};
+
+const alternarAtivo = async (id: string, ativoAtual: boolean) => {
+  try {
+    await usuarioService.atualizarAtivo(id, ativoAtual);
+    buscarUsuarios();
+  } catch (error) {
+    console.error("Erro ao alterar ativo", error);
+  }
+};
 
   return (
     <div className="usuarios-container">
@@ -85,8 +87,8 @@ export default function SolicitacoesUsuarios() {
           >
             <option value="TODOS">Todos</option>
             <option value="PENDENTE">Pendentes</option>
-            <option value="ACEITO">Aceitos</option>
-            <option value="RECUSADO">Recusados</option>
+            <option value="APROVADO">Aprovados</option>
+            <option value="REJEITADO">Rejeitados</option>
           </select>
         </div>
 
@@ -123,10 +125,10 @@ export default function SolicitacoesUsuarios() {
               <tr key={u.id}>
                 <td>{u.nome}</td>
                 <td>{u.email}</td>
-                <td>{u.ministerio}</td>
+                <td>{u.ministerioNome}</td>
                 <td>
                   <span
-                    className={`status-badge ${u.status === "ACEITO"
+                    className={`status-badge ${u.status === "APROVADO"
                       ? "status-aceito"
                       : u.status === "PENDENTE"
                         ? "status-pendente"
@@ -147,23 +149,30 @@ export default function SolicitacoesUsuarios() {
                 <td className="acoes">
                   <button
                     className="btn-aceitar"
-                    onClick={() => atualizarStatus(u.id, "ACEITO")}
-                    disabled={u.status === "ACEITO"}
+                    onClick={() => atualizarStatus(u.id, "APROVADO")}
+                    disabled={u.status === "APROVADO"}
                   >
                     ✅
                   </button>
                   <button
                     className="btn-recusar"
-                    onClick={() => atualizarStatus(u.id, "RECUSADO")}
-                    disabled={u.status === "RECUSADO"}
+                    onClick={() => atualizarStatus(u.id, "REJEITADO")}
+                    disabled={u.status === "REJEITADO"}
                   >
                     ❌
                   </button>
                   <button
                     className={`btn-bloquear ${u.ativo ? "bloquear" : "desbloquear"}`}
-                    onClick={() => alternarAtivo(u.id)}
+                    onClick={() => alternarAtivo(u.id, !u.ativo)}
                   >
                     {u.ativo ? "🔒 Bloquear" : "🔓 Desbloquear"}
+                  </button>
+
+                  <button
+                    className={`btn-role ${u.role === "ADMIN" ? "remover-admin" : "tornar-admin"}`}
+                    onClick={() => tornarAdmin(u.id, u.role === "ADMIN" ? false: true)}
+                  >
+                    {u.role === "ADMIN" ? "⬇ Remover Admin" : "⭐ Tornar Admin"}
                   </button>
                 </td>
               </tr>

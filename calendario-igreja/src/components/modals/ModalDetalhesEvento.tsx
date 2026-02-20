@@ -1,12 +1,12 @@
 import ModalBase from './ModalBase'
 
 interface Evento {
-    titulo: string
-    inicio: Date
-    fim: Date
+    titulo: string;
+    data: Date
     ministerio?: string
     status: 'ACEITO' | 'PENDENTE' | 'RECUSADO'
     type?: 'evento' | 'especial' | 'servir'
+    horario?: string
 }
 
 interface ModalDetalhesEventoProps {
@@ -24,14 +24,14 @@ export default function ModalDetalhesEvento({ eventos, onClose }: ModalDetalhesE
                 {eventos.map((evento, idx) => (
                     <div key={idx} className="modal-evento">
                         <p><b>Título:</b> {evento.titulo}</p>
-                        <p><b>Início:</b> {evento.inicio.toLocaleDateString()}</p>
-                        <p><b>Término:</b> {evento.fim.toLocaleDateString()}</p>
+                        <p><b>Data:</b> {evento.data.toLocaleDateString()}</p>
                         <p><b>Ministério:</b> {evento.ministerio || '-'}</p>
                         <p><b>Status:</b> {evento.status}</p>
+                        <p><b>Horario:</b> {evento.horario}</p>
                     </div>
                 ))}
             </div>
-            <button onClick={onClose} className="btn btn-secondary mt-2">Fechar</button>
+            <button onClick={onClose} className="btn btn-cancelar mt-2">Fechar</button>
         </ModalBase>
     )
 }

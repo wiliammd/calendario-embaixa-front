@@ -144,3 +144,12 @@ button:disabled {
     font-size: 0.95rem;
   }
 }
+.role-admin {
+  background: #e74c3c;
+  color: white;
+}
+
+.role-user {
+  background: #3498db;
+  color: white;
+}

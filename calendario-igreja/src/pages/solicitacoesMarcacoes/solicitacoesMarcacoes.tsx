@@ -1,57 +1,42 @@
-import { useEffect, useState } from "react";
+import {  useState, useEffect } from "react";
 import "./solicitacoesMarcacoes.css";
-
-// Simulação de backend
-const todasSolicitacoesMock = [
-  { id: 1, nome: "Maria", ministerio: "Mídia", data: "2025-12-02", status: "PENDENTE" },
-  { id: 2, nome: "João", ministerio: "Mídia", data: "2025-12-03", status: "ACEITO" },
-  { id: 3, nome: "Cleber", ministerio: "Diaconato", data: "2025-12-05", status: "RECUSADO" },
-  { id: 4, nome: "Letícia", ministerio: "Kids", data: "2025-12-10", status: "PENDENTE" },
-  { id: 5, nome: "Carlos", ministerio: "Mídia", data: "2025-11-20", status: "PENDENTE" },
-  { id: 6, nome: "Bruno", ministerio: "Diaconato", data: "2025-12-15", status: "ACEITO" },
-];
+import { solicitacaoService, type SolicitacaoResponse } from "../../services/SolicitacaoService";
 
 export default function SolicitacoesMarcacoes() {
-  const [solicitacoes, setSolicitacoes] = useState([]);
+  const [solicitacoes, setSolicitacoes] = useState<SolicitacaoResponse[]>([]);
   const [statusFiltro, setStatusFiltro] = useState("TODOS");
   const [mesSelecionado, setMesSelecionado] = useState(new Date().getMonth() + 1);
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
 
-  // 🔹 Simula busca no backend
-  const buscarSolicitacoes = () => {
-    // Aqui você substituirá por algo real:
-    // fetch(`/api/solicitacoes?mes=${mesSelecionado}&status=${statusFiltro}&page=${pagina}`)
-    //   .then(r => r.json())
-    //   .then(({ data, totalPaginas }) => { ... })
+  const buscarSolicitacoes = async () => {
+    try {
+      const response = await solicitacaoService.listar(
+        pagina - 1,
+        5,
+        mesSelecionado,
+        statusFiltro
+      );
 
-    const filtradas = todasSolicitacoesMock.filter((s) => {
-      const mesData = new Date(s.data).getMonth() + 1;
-      const matchMes = mesData === Number(mesSelecionado);
-      const matchStatus = statusFiltro === "TODOS" ? true : s.status === statusFiltro;
-      return matchMes && matchStatus;
-    });
+      setSolicitacoes(response.data.content);
+      setTotalPaginas(response.data.totalPages);
+    } catch (error) {
+      console.error("Erro ao buscar solicitações", error);
+    }
+  };
 
-    // Simula paginação (2 por página)
-    const inicio = (pagina - 1) * 2;
-    const paginadas = filtradas.slice(inicio, inicio + 2);
-
-    // @ts-ignore
-    setSolicitacoes(paginadas);
-    setTotalPaginas(Math.ceil(filtradas.length / 2));
+  const atualizarStatus = async (id: string, novoStatus: string) => {
+    try {
+      await solicitacaoService.atualizarStatus(id, novoStatus);
+      buscarSolicitacoes();
+    } catch (error) {
+      console.error("Erro ao atualizar status", error);
+    }
   };
 
   useEffect(() => {
-    buscarSolicitacoes();
-  }, [statusFiltro, mesSelecionado, pagina]);
-  // @ts-ignore
-  const atualizarStatus = (id, novoStatus) => {
-    // @ts-ignore
-    setSolicitacoes((prev) =>
-      // @ts-ignore
-      prev.map((s) => (s.id === id ? { ...s, status: novoStatus } : s))
-    );
-  };
+      buscarSolicitacoes();
+    }, [statusFiltro, mesSelecionado, pagina]);
 
   const meses = [
     { num: 1, nome: "Janeiro" },
@@ -127,16 +112,16 @@ export default function SolicitacoesMarcacoes() {
 
             {solicitacoes.map((s) => (
               <tr key={s.id}>
-                <td>{s.nome}</td>
+                <td>{s.titulo}</td>
                 <td>{s.ministerio}</td>
                 <td>{new Date(s.data).toLocaleDateString()}</td>
                 <td>
                   <span
                     className={`status-badge ${s.status === "ACEITO"
-                        ? "status-aceito"
-                        : s.status === "PENDENTE"
-                          ? "status-pendente"
-                          : "status-recusado"
+                      ? "status-aceito"
+                      : s.status === "PENDENTE"
+                        ? "status-pendente"
+                        : "status-recusado"
                       }`}
                   >
                     {s.status}

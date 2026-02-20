@@ -1,46 +1,66 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import './cadastro.css'
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './cadastro.css';
+import { eventService, type Ministerio } from '../../services/EventoService';
+import { usuarioService } from '../../services/UsuarioService';
 
 export default function Cadastro() {
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [ministerio, setMinisterio] = useState('')
-  const [ministerios, setMinisterios] = useState([])
+  const [ministerios, setMinisterios] = useState<Ministerio[]>([])
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState('')
   const navigate = useNavigate()
 
-  // 🔹 Simulação de busca dos ministérios no backend
+
   useEffect(() => {
-    // Exemplo de futuro fetch: fetch('/api/ministerios').then(r => r.json()).then(setMinisterios)
-    setMinisterios(['Mídia', 'Diaconato', 'Kids', 'Louvor'])
+    carregarMinisterios();
   }, [])
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-
-    if (!nome || !email || !senha || !ministerio) {
-      setErro('Preencha todos os campos.')
-      return
+  const carregarMinisterios = async () => {
+    try {
+      const dados = await eventService.listarMinisterios()
+      setMinisterios(dados)
+    } catch (error) {
+      console.error('Erro ao carregar ministérios')
     }
+  }
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    setErro('')
-    setSucesso('Usuário cadastrado com sucesso!')
+  if (!nome || !email || !senha || !ministerio) {
+    setErro("Preencha todos os campos.");
+    return;
+  }
 
-    // 🔹 Simula envio ao backend
-    console.log({
+  try {
+    setErro("");
+
+    await usuarioService.cadastrarUsuario({
       nome,
       email,
       senha,
-      ministerio
-    })
+      ministerioId: ministerio, // aqui é o UUID
+    });
+
+    setSucesso("Usuário cadastrado com sucesso!");
 
     setTimeout(() => {
-      navigate('/login')
-    }, 1200)
+      navigate("/login");
+    }, 1200);
+
+  } catch (error: any) {
+    console.error(error);
+
+    if (error.response?.data?.message) {
+      setErro(error.response.data.message);
+    } else {
+      setErro("Erro ao cadastrar usuário.");
+    }
   }
+};
 
   return (
     <div className="cadastro-container">
@@ -82,8 +102,8 @@ export default function Cadastro() {
           >
             <option value="">Selecione seu ministério...</option>
             {ministerios.map((m) => (
-              <option key={m} value={m}>
-                {m}
+              <option key={m.id} value={m.id}>
+                {m.nome}
               </option>
             ))}
           </select>
